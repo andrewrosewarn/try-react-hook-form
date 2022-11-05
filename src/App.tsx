@@ -1,25 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { Button, TextField, Box, TextFieldProps } from "@mui/material";
+import { forwardRef } from "react";
+import { Stack } from "@mui/system";
+interface IFormInput {
+  pin: string;
+  password: string;
+}
+
+const Field = forwardRef((props: TextFieldProps, ref) => (
+  <TextField
+    {...props}
+    size="small"
+    variant="filled"
+    InputLabelProps={{ shrink: true }}
+    InputProps={{ disableUnderline: true, ref: ref }}
+  />
+));
 
 function App() {
+  const { handleSubmit, control } = useForm<IFormInput>();
+  const pin = useWatch({ control, name: "pin", defaultValue: "" });
+  const password = useWatch({ control, name: "password", defaultValue: "" });
+
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    console.log(data);
+  };
+
+  const submitDisabled = pin === "" || password === "";
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box m={2}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack spacing={1} width={500}>
+          <Controller
+            name="pin"
+            defaultValue=""
+            control={control}
+            render={({ field }) => <Field label="Pin" {...field} />}
+          />
+          <Controller
+            name="password"
+            defaultValue=""
+            control={control}
+            render={({ field }) => <Field label="Password" type="password" {...field} />}
+          />
+
+          <Button type="submit" disabled={submitDisabled} variant="contained">
+            Login
+          </Button>
+        </Stack>
+      </form>
+    </Box>
   );
 }
 
